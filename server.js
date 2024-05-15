@@ -26,5 +26,5 @@ app.listen(PORT,()=>{
 })
 
 app.get("/",(req,res)=>{
-    res.send("<h1>Hello welcome to Backend Website..</h1>")
+    res.send("<center><h1>Hello welcome to Backend Website..</h1></center>")
 })
