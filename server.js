@@ -24,3 +24,7 @@ app.use("/uploads",express.static("uploads"))
 app.listen(PORT,()=>{
     console.log(`server running on a ${PORT} port...`)
 })
+
+app.get("/",(req,res)=>{
+    res.send("<h1>Hello welcome to Backend Website..</h1>")
+})
