@@ -1,9 +1,7 @@
-
-const firmModel = require("../model/Firm.js")
-const Vendor = require("../model/Vendor.js")
-const multer = require("multer")
-const path = require("path")
-
+const firmModel = require("../model/Firm.js");
+const Vendor = require("../model/Vendor.js");
+const multer = require("multer");
+const path = require("path");
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -16,23 +14,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-  const addFirm = async (req, res) => {
+const addFirm = async (req, res) => {
     try {
-        console.log("Vendor ID:", req.vendorId.user.id);
-        const { firmName, area, category, region, offer } = req.body;
-
-        const image = req.file ? req.file.filename : undefined;
-        console.log(image)
-
-        const vendor = await Vendor.findById(req.vendorId.user.id);
+        // Ensure vendor authentication
+        const vendorId = req.vendorId.user.id;
+        const vendor = await Vendor.findById(vendorId);
 
         if (!vendor) {
             return res.status(404).json({ message: "Vendor not found" });
         }
-        // if (vendor.firm.length > 0) {
-        //     return res.status(400).json({ message: "vendor can have only one firm" });
-        // }
 
+        // Check if file was uploaded
+        const image = req.file ? req.file.filename : undefined;
+
+        // Extract form data
+        const { firmName, area, category, region, offer } = req.body;
+
+        // Create and save firm
         const firm = new firmModel({
             firmName,
             area,
@@ -40,10 +38,12 @@ const upload = multer({ storage: storage });
             region,
             offer,
             image,
-            vendor : vendor.id
+            vendor: vendorId // Assign vendor ID directly
         });
 
         const savedFirm = await firm.save();
+        
+        // Update vendor's firm list
         vendor.firm.push(savedFirm);
         await vendor.save();
 
@@ -54,6 +54,4 @@ const upload = multer({ storage: storage });
     }
 };
 
- 
-
-module.exports = {addFirm : [upload.single("image"),addFirm]}
+module.exports = { addFirm: [upload.single("image"), addFirm] };
