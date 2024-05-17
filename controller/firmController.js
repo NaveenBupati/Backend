@@ -1,7 +1,9 @@
-const firmModel = require("../model/Firm.js");
-const Vendor = require("../model/Vendor.js");
-const multer = require("multer");
-const path = require("path");
+
+const firmModel = require("../model/Firm.js")
+const Vendor = require("../model/Vendor.js")
+const multer = require("multer")
+const path = require("path")
+
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -14,23 +16,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const addFirm = async (req, res) => {
+  const addFirm = async (req, res) => {
     try {
-        // Ensure vendor authentication
-        const vendorId = req.vendorId.user.id;
-        const vendor = await Vendor.findById(vendorId);
+        console.log("Vendor ID:", req.vendorId.user.id);
+        const { firmName, area, category, region, offer } = req.body;
+
+        const image = req.file ? req.file.filename : undefined;
+        console.log(image)
+
+        const vendor = await Vendor.findById(req.vendorId.user.id);
 
         if (!vendor) {
             return res.status(404).json({ message: "Vendor not found" });
         }
+        // if (vendor.firm.length > 0) {
+        //     return res.status(400).json({ message: "vendor can have only one firm" });
+        // }
 
-        // Check if file was uploaded
-        const image = req.file ? req.file.filename : undefined;
-
-        // Extract form data
-        const { firmName, area, category, region, offer } = req.body;
-
-        // Create and save firm
         const firm = new firmModel({
             firmName,
             area,
@@ -38,20 +40,21 @@ const addFirm = async (req, res) => {
             region,
             offer,
             image,
-            vendor: vendorId // Assign vendor ID directly
+            vendor : vendor.id
         });
 
         const savedFirm = await firm.save();
-        
-        // Update vendor's firm list
+        const firmId = savedFirm._id
         vendor.firm.push(savedFirm);
         await vendor.save();
 
-        res.status(200).json({ message: "Firm added successfully", savedFirm });
+        res.status(200).json({ message: "Firm added successfully", firmId });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Internal server error" });
     }
 };
 
-module.exports = { addFirm: [upload.single("image"), addFirm] };
+ 
+
+module.exports = {addFirm : [upload.single("image"),addFirm]}
