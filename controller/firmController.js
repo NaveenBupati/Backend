@@ -29,9 +29,9 @@ const upload = multer({ storage: storage });
         if (!vendor) {
             return res.status(404).json({ message: "Vendor not found" });
         }
-        // if (vendor.firm.length > 0) {
-        //     return res.status(400).json({ message: "vendor can have only one firm" });
-        // }
+        if (vendor.firm.length > 0) {
+            return res.status(400).json({ message: "vendor can have only one firm" });
+        }
 
         const firm = new firmModel({
             firmName,
