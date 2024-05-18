@@ -1,7 +1,6 @@
  
 const multer = require("multer")
 const path = require("path")
- 
 const Product = require("../model/Product.js");
 const Firm = require("../model/Firm.js");
 
@@ -65,8 +64,8 @@ const getProductByFirm = async (req, res) => {
         }
 
         const products = firm.product;
-        const reataurentName = firm.firmName
-        res.status(200).json({reataurentName,products});
+        const Restaurent_Name = firm.firmName
+        res.status(200).json({Restaurent_Name,products});
 
 
     } catch (err) {
@@ -92,4 +91,4 @@ const productDelete = async(req,res)=>{
     }
 }
 
-module.exports = {addProduct : [upload.single("image"),addProduct],getProductByFirm,productDelete}
+module.exports = {addProduct : [upload.single("image"),addProduct], getProductByFirm,productDelete}
